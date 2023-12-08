@@ -1,5 +1,8 @@
 BLANK_SQUARE = '_'
-
+# Victory Message
+# Prevent game from crashing when given position outside of range or anything other than a number
+# make code more readable
+# add play again
 
 class TicTacToe:
 
@@ -7,6 +10,8 @@ class TicTacToe:
         self.board_size = board_size
         self.board = [BLANK_SQUARE] * self.board_size ** 2
         self.current_player = 'X'
+        # adding a turn count to let players know how many turns they played
+        self.turn = 0
 
     def print_board(self):
         print()
@@ -15,18 +20,21 @@ class TicTacToe:
             if i % self.board_size == self.board_size - 1:
                 print()
                 print()
-
+    
     def make_move(self, position):
-        if self.board[position] == BLANK_SQUARE:
+        # let's add a guard clause to make sure the move is valid
+        if position < 0 or position > self.board_size ** 2 or isinstance(position, int) == False:
+            print('Invalid move!')
+        elif self.board[position] == BLANK_SQUARE:
             self.board[position] = self.current_player
-            if self.current_player == 'X':
-                self.current_player = 'O'
-            else:
-                self.current_player = 'X'
+            self.turn += 1
+            # change player in one line for less code and easier readability
+            self.current_player = 'O' if self.current_player == 'X' else 'X'
         else:
             print('Invalid move!')
-
+    
     def check_winner(self):
+        # I've added a victory message for the player that wins. It also tells them how many turns were played.
         # Check rows
         for i in range(0, self.board_size ** 2, self.board_size):
             count_same = 1
@@ -34,7 +42,9 @@ class TicTacToe:
                 if self.board[j] == self.board[j-1] != BLANK_SQUARE:
                     count_same += 1
             if count_same == self.board_size:
-                return self.board[i]
+                print(f'Congrats! {self.board[j]} wins in {self.turn} turns')
+                self.print_board()
+                replay()
 
         # Check columns
         for i in range(self.board_size):
@@ -43,7 +53,9 @@ class TicTacToe:
                 if self.board[j] == self.board[j - self.board_size] != BLANK_SQUARE:
                     count_same += 1
             if count_same == self.board_size:
-                return self.board[i]
+                print(f'Congrats! {self.board[j]} wins in {self.turn} turns')
+                self.print_board()
+                replay()
 
         # Check diagonals
         count_same = 0
@@ -51,34 +63,70 @@ class TicTacToe:
             if self.board[i] == self.board[0] != BLANK_SQUARE:
                 count_same += 1
         if count_same == self.board_size:
-            return self.board[0]
+            print(f'Congrats! {self.board[j]} wins in {self.turn} turns')
+            self.print_board()
+            replay()
 
         count_same = 0
         for i in range(self.board_size - 1, self.board_size ** 2 - 1, self.board_size - 1):
             if self.board[i] == self.board[self.board_size - 1] != BLANK_SQUARE:
                 count_same += 1
         if count_same == self.board_size:
-            return self.board[self.board_size - 1]
+            print(f'Congrats! {self.board[i]} wins in {self.turn} turns')
+            self.print_board()
+            replay()
 
         return None
 
     def check_draw(self):
-        return BLANK_SQUARE not in self.board
+        if BLANK_SQUARE not in self.board:
+            print('Draw!')
+            replay()
 
     def reset(self):
-        self.board = [BLANK_SQUARE] * 9
+        # reset the size of the board using the board_size variable, not 9
+        self.board = [BLANK_SQUARE] * self.board_size ** 2
         self.current_player = 'X'
 
+# A reusable function for getting input that doesn't allow invalid inputs
+def get_user_input(prompt, valid_range):
+    while True:
+        try:
+            value = int(input(prompt))
+            if value in valid_range:
+                return value
+            else:
+                print(f'Please input a number between {valid_range[0]} and {valid_range[-1]}')
+        except ValueError:
+            print('Please input a valid number.')
 
-# Main program starts here
-board_size = int(input('What board size do you want? '))
 
-game = TicTacToe(board_size=board_size)
+# Turn the start of the game into a function so we can use it to replay the game
+# Add a message to let the user know what they're playing
+# Make sure the board size input is an integer greater than 2 so the program doesn't break
+# I also capped the board size at 100. If we give the user the option to input any number the program could break due to the number being so large
+def start():
+    print('TicTacToe! Good luck!')
+    board_size = get_user_input('What board size do you want? Choose any size from 3 to 100.\n', range(3, 101))        
+
+    game = TicTacToe(board_size=board_size)
 
 # Game loop
-while game.check_winner() is None and not game.check_draw():
-    game.print_board()
-    position = int(input(f'Enter position (0 - {game.board_size ** 2 - 1}): '))
-    game.make_move(position)
+    while game.check_winner() is None and not game.check_draw():
+        game.print_board()
+        position = get_user_input(f'Enter position (0 - {game.board_size ** 2 - 1}): ', range(game.board_size ** 2))
+        game.make_move(position)
 
-game.print_board()
+    game.print_board()
+
+# Ask if the user wants to play again
+def replay():
+    play_again = input('Do you want to play again? (yes/no): ').lower()
+    if play_again == 'yes':
+        start()
+    else:
+        print('ByeBye')
+        exit()
+
+# Main program starts here
+start()

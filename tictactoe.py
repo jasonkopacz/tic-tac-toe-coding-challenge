@@ -1,8 +1,4 @@
 BLANK_SQUARE = '_'
-# Victory Message
-# Prevent game from crashing when given position outside of range or anything other than a number
-# make code more readable
-# add play again
 
 class TicTacToe:
 
@@ -34,7 +30,7 @@ class TicTacToe:
             print('Invalid move!')
     
     def check_winner(self):
-        # I've added a victory message for the player that wins. It also tells them how many turns were played.
+        # I've added a victory message for the player that wins. It also tells them how many turns were played and asks if they want to play again.
         # Check rows
         for i in range(0, self.board_size ** 2, self.board_size):
             count_same = 1
@@ -73,13 +69,7 @@ class TicTacToe:
     def check_draw(self):
         if BLANK_SQUARE not in self.board:
             print('Draw!')
-            handle_game_end(self)
-            
-
-    def reset(self):
-        # reset the size of the board using the board_size variable, not 9
-        self.board = [BLANK_SQUARE] * self.board_size ** 2
-        self.current_player = 'X'
+            handle_game_end(self, 'Draw')
 
 # A reusable function for getting input that doesn't allow invalid inputs
 def get_user_input(prompt, valid_range):
@@ -89,7 +79,7 @@ def get_user_input(prompt, valid_range):
             if value in valid_range:
                 return value
             else:
-                print(f'Please input a number between {valid_range[0]} and {valid_range[-1]}')
+                print(f'Invalid input')
         except ValueError:
             print('Please input a valid number.')
 
@@ -99,7 +89,7 @@ def get_user_input(prompt, valid_range):
 # Make sure the board size input is an integer greater than 2 so the program doesn't break
 # I also capped the board size at 100. If we give the user the option to input any number the program could break due to the number being so large
 def start():
-    print('TicTacToe! Good luck!')
+    print("Let's play TicTacToe!\nThis is a 2 player game so grab a friend and take turns trying to fill an entire row, column, or diagonal with your mark!\n")
     board_size = get_user_input('What board size do you want? Choose any size from 3 to 100.\n', range(3, 101))        
 
     game = TicTacToe(board_size=board_size)
@@ -107,7 +97,7 @@ def start():
 # Game loop
     while game.check_winner() is None and not game.check_draw():
         game.print_board()
-        position = get_user_input(f"{game.current_player}'s turn Enter position (0 - {game.board_size ** 2 - 1}): ", range(game.board_size ** 2))
+        position = get_user_input(f"{game.current_player}'s turn. Enter a whole number from 0 - {game.board_size ** 2 - 1} to place your mark: ", range(game.board_size ** 2))
         game.make_move(position)
 
     game.print_board()
@@ -118,13 +108,16 @@ def replay():
     if play_again == 'yes':
         start()
     else:
-        print('ByeBye')
+        print('Thanks for playing!')
         exit()
 
 def handle_game_end(self, winner):
-    print(f'{winner} wins in {self.turn} turns!')
+    print(f'Congrats! {winner} wins in {self.turn} turns') if not winner == 'Draw' else ''
     self.print_board()
     replay()
 
 # Main program starts here
 start()
+
+# An important improvement that we can add is changing the board so that the numbers are 1-9 instead of 0-8.
+# It makes the UX better for the player and is easier to understand. That would be a great update for the next iteration.

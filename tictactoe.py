@@ -42,9 +42,7 @@ class TicTacToe:
                 if self.board[j] == self.board[j-1] != BLANK_SQUARE:
                     count_same += 1
             if count_same == self.board_size:
-                print(f'Congrats! {self.board[j]} wins in {self.turn} turns')
-                self.print_board()
-                replay()
+                handle_game_end(self, self.board[j])
 
         # Check columns
         for i in range(self.board_size):
@@ -53,9 +51,7 @@ class TicTacToe:
                 if self.board[j] == self.board[j - self.board_size] != BLANK_SQUARE:
                     count_same += 1
             if count_same == self.board_size:
-                print(f'Congrats! {self.board[j]} wins in {self.turn} turns')
-                self.print_board()
-                replay()
+                handle_game_end(self, self.board[j])
 
         # Check diagonals
         count_same = 0
@@ -63,25 +59,22 @@ class TicTacToe:
             if self.board[i] == self.board[0] != BLANK_SQUARE:
                 count_same += 1
         if count_same == self.board_size:
-            print(f'Congrats! {self.board[j]} wins in {self.turn} turns')
-            self.print_board()
-            replay()
+            handle_game_end(self, self.board[i])
 
         count_same = 0
         for i in range(self.board_size - 1, self.board_size ** 2 - 1, self.board_size - 1):
             if self.board[i] == self.board[self.board_size - 1] != BLANK_SQUARE:
                 count_same += 1
         if count_same == self.board_size:
-            print(f'Congrats! {self.board[i]} wins in {self.turn} turns')
-            self.print_board()
-            replay()
+            handle_game_end(self, self.board[i])
 
         return None
 
     def check_draw(self):
         if BLANK_SQUARE not in self.board:
             print('Draw!')
-            replay()
+            handle_game_end(self)
+            
 
     def reset(self):
         # reset the size of the board using the board_size variable, not 9
@@ -114,7 +107,7 @@ def start():
 # Game loop
     while game.check_winner() is None and not game.check_draw():
         game.print_board()
-        position = get_user_input(f'Enter position (0 - {game.board_size ** 2 - 1}): ', range(game.board_size ** 2))
+        position = get_user_input(f"{game.current_player}'s turn Enter position (0 - {game.board_size ** 2 - 1}): ", range(game.board_size ** 2))
         game.make_move(position)
 
     game.print_board()
@@ -127,6 +120,11 @@ def replay():
     else:
         print('ByeBye')
         exit()
+
+def handle_game_end(self, winner):
+    print(f'{winner} wins in {self.turn} turns!')
+    self.print_board()
+    replay()
 
 # Main program starts here
 start()

@@ -121,3 +121,6 @@ start()
 
 # An important improvement that we can add is changing the board so that the numbers are 1-9 instead of 0-8.
 # It makes the UX better for the player and is easier to understand. That would be a great update for the next iteration.
+# Also adding an AI that plays against the user would be a great addition as well.
+
+jaopsdifja
